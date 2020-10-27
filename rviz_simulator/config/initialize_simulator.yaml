@@ -1,5 +1,7 @@
 world_frame_id: "ROSWorld"
 
+publish_rate: 10
+
 # target parameters
 num_targets: 5
 target_size: [.1, 0.1, 0.01]

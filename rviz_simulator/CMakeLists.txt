@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf_conversions
   tf
   roslib
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -64,11 +65,11 @@ find_package(Ceres REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   TagDetection.msg
+   ImageFrame.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -85,10 +86,10 @@ find_package(Ceres REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs#   visualization_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 
 ################################################
@@ -123,7 +124,7 @@ find_package(Ceres REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rviz_simulator
-  CATKIN_DEPENDS roscpp std_msgs visualization_msgs interactive_markers roslib
+  CATKIN_DEPENDS roscpp std_msgs visualization_msgs interactive_markers roslib message_runtime
   # DEPENDS system_lib
 )
 

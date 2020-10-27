@@ -53,6 +53,8 @@
 // #include <camera_calibration_parsers/parse.h>
 
 #include "rviz_simulator/target.h"
+#include "rviz_simulator/ImageFrame.h"
+#include "rviz_simulator/TagDetection.h"
 
 namespace rviz_simulator
 {
@@ -133,6 +135,8 @@ public:
 
   /// Adds camera to shared interactive marker server.
   void addCameraToServer();
+
+  rviz_simulator::ImageFrame publishPicture();
 
 private:
   CameraProperties camera_properties_;  /// Camera properties

@@ -77,6 +77,7 @@ Camera::Camera(const std::string marker_frame_id, const std::string marker_name,
   this->dumpCameraPropertiesToYAMLFile("camera.yaml");
 
   this->first_picture_taken_ = false;
+
 }
 
 Camera::~Camera()
@@ -174,6 +175,60 @@ Eigen::Affine3d Camera::calculateReference_T_Target(visualization_msgs::Interact
   tf::poseMsgToEigen(reference.pose, origin_T_reference);
   tf::poseMsgToEigen(target.pose, origin_T_target);
   return origin_T_reference.inverse() * origin_T_target;
+}
+
+rviz_simulator::ImageFrame Camera::publishPicture(){
+  rviz_simulator::ImageFrame msg;
+
+  if (this->first_picture_taken_){
+
+    // calculating world_T_camera
+    visualization_msgs::InteractiveMarker camera_marker;
+    this->g_interactive_marker_server_->get(this->marker_name_, camera_marker);
+
+    visualization_msgs::InteractiveMarker world_marker;
+    this->g_interactive_marker_server_->get("tag0", world_marker);
+
+    Eigen::Affine3d world_T_camera = this->calculateReference_T_Target(world_marker, camera_marker);
+    std::vector<double> rotation = this->Affine3dRotationToRodrigues(world_T_camera);
+    std::vector<double> translation = this->Affine3dToTranslation(world_T_camera);
+
+    for (int i=0;i<3;i++){
+      msg.rotation[i]=rotation[i];
+      msg.translation[i]=translation[i];
+    }
+
+    // processing all camera_T_target transforms
+    for (int i = 0; i < this->world_T_targets_.size(); i++){
+      // getting camera_T_target
+      Eigen::Affine3d camera_T_target = world_T_camera.inverse() * this->world_T_targets_[i];
+
+      // check if target is in front of camera and camera is in front of target and target is in range
+      // if yes then process corners
+      ROS_INFO_STREAM("Processing targetID: " << i);
+      if (this->isInFrontOfCamera(camera_T_target) && this->isInFrontOfTarget(camera_T_target.inverse()))
+      {
+        std::vector<Eigen::Vector2d> corners = processCorners(camera_T_target);
+
+        //  output to yaml file
+        if (!corners.empty())
+        {
+          rviz_simulator::TagDetection temp;
+          temp.id = i;
+          temp.size = {this->target_x_length_, this->target_y_length_ };
+          
+          temp.BL_xy= { corners[0].x(), corners[0].y() };
+          temp.BR_xy= { corners[1].x(), corners[1].y() };
+          temp.TR_xy= { corners[2].x(), corners[2].y() };
+          temp.TL_xy= { corners[3].x(), corners[3].y() };
+
+          msg.detections.push_back(temp);
+        }
+      }
+    }
+  }
+  
+  return msg;
 }
 
 void Camera::takePicture()

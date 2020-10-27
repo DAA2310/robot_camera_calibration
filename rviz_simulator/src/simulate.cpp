@@ -48,6 +48,7 @@
 #include "rviz_simulator/target.h"
 #include "rviz_simulator/camera.h"
 
+
 /// pointer for the global interactive marker server for all the markers
 boost::shared_ptr<interactive_markers::InteractiveMarkerServer> g_interactive_marker_server;
 
@@ -219,6 +220,8 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "simulate");
   ros::NodeHandle n;
+  ros::Publisher frame_pub = n.advertise<rviz_simulator::ImageFrame>("synthetic_tag_detection",1000);
+  
 
   g_interactive_marker_server.reset(new interactive_markers::InteractiveMarkerServer("simulate", "", false));
 
@@ -226,6 +229,13 @@ int main(int argc, char** argv)
 
   // loading parameters
   // getting the world_frame_id
+  double publish_rate;
+  if (!n.getParam("publish_rate", publish_rate))
+  {
+    publish_rate = 5;
+    ROS_WARN_STREAM("publish_rate param not specified. Using default value: " << publish_rate); \
+  }
+  
   std::string world_frame_id;
   if (!n.getParam("/world_frame_id", world_frame_id))
   {
@@ -298,6 +308,16 @@ int main(int argc, char** argv)
                                 visualization_msgs::InteractiveMarkerControl::BUTTON, camera_properties);
 
   g_interactive_marker_server->applyChanges();
+
+  ros::Rate loop_rate(publish_rate);
+  while (ros::ok()){
+    rviz_simulator::ImageFrame msg;
+    msg = camera.publishPicture();
+    frame_pub.publish(msg);
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+
   ros::spin();
   g_interactive_marker_server.reset();
 }
