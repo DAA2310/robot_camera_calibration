@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "simulate");
   ros::NodeHandle n;
-  ros::Publisher frame_pub = n.advertise<rviz_simulator::ImageFrame>("synthetic_tag_detection",1000);
+  ros::Publisher frame_pub = n.advertise<apriltag_ros::AprilTagDetectionArray>("tag_detections",1000);
   
 
   g_interactive_marker_server.reset(new interactive_markers::InteractiveMarkerServer("simulate", "", false));
@@ -311,7 +311,7 @@ int main(int argc, char** argv)
 
   ros::Rate loop_rate(publish_rate);
   while (ros::ok()){
-    rviz_simulator::ImageFrame msg;
+    apriltag_ros::AprilTagDetectionArray msg;
     msg = camera.publishPicture();
     frame_pub.publish(msg);
     ros::spinOnce();

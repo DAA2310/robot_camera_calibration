@@ -177,8 +177,8 @@ Eigen::Affine3d Camera::calculateReference_T_Target(visualization_msgs::Interact
   return origin_T_reference.inverse() * origin_T_target;
 }
 
-rviz_simulator::ImageFrame Camera::publishPicture(){
-  rviz_simulator::ImageFrame msg;
+apriltag_ros::AprilTagDetectionArray Camera::publishPicture(){
+  apriltag_ros::AprilTagDetectionArray msg;
 
   if (this->first_picture_taken_){
 
@@ -213,14 +213,12 @@ rviz_simulator::ImageFrame Camera::publishPicture(){
         //  output to yaml file
         if (!corners.empty())
         {
-          rviz_simulator::TagDetection temp;
-          temp.id = i;
-          temp.size = {this->target_x_length_, this->target_y_length_ };
+          apriltag_ros::AprilTagDetection temp;
+          temp.id.push_back(i);
+          temp.size.push_back(this->target_x_length_);
           
-          temp.BL_xy= { corners[0].x(), corners[0].y() };
-          temp.BR_xy= { corners[1].x(), corners[1].y() };
-          temp.TR_xy= { corners[2].x(), corners[2].y() };
-          temp.TL_xy= { corners[3].x(), corners[3].y() };
+          temp.pixel_corners_x= { corners[0].x(), corners[1].x(), corners[2].x(), corners[3].x()  };
+          temp.pixel_corners_y= { corners[0].y(), corners[1].y(), corners[2].y(), corners[3].y()  };
 
           msg.detections.push_back(temp);
         }
