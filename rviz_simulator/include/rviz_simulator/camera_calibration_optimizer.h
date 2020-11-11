@@ -103,6 +103,17 @@ struct Picture
   std::vector<Detection> detections;
 };
 
+struct tag
+{
+    int id;
+    double size;
+    Eigen::MatrixXd wTtag;
+    std::array<double, 6> wTtag_vec;
+};
+
+std::vector<tag> known_tags;
+std::vector<Picture> cached_pictures;
+
 /// Templated functor for the Bundle Adjustment problem
 struct ReProjectionResidual
 {
@@ -136,7 +147,13 @@ public:
   /// @param detections_directory_path   Path to directory containing detections, targets and camera files
   CameraCalibrationOptimizer(std::string detections_directory_path);
 
+  /// @param known_tags   Vector of mapped tags, their unique IDs, sizes and world_T_tag poses
+  CameraCalibrationOptimizer(std::string detections_directory_path, bool flag);
+
   ~CameraCalibrationOptimizer();
+
+  //loads or updates targets and pictures data for optimizer
+  void LoadViews();
 
   /// Runs the ceres non linear least squares optimizer on the loaded bundle adjustment problem
   void optimize();
@@ -168,6 +185,10 @@ private:
   /// Function reads target data from a YAML file
   /// @returns    A map of targets
   std::map<int, Target> getTargets(std::string targets_directory_path);
+
+  /// Function reads target data from mapped targets vector
+  /// @returns    A map of targets
+  std::map<int, Target> getTagMap(std::vector<tag> known_tags);
 
   /// Function reads all picture (detections_X.yaml) files from a given directory
   /// If there are no detections in a picture, then that picture is not pushed to the vector

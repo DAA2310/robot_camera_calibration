@@ -78,7 +78,7 @@ int main(int argc, char** argv)
   std::string detections_directory_path = getDetectionsDirectoryPath(n);
   camera_calibration::CameraCalibrationOptimizer camera_calibration_optimizer(detections_directory_path);
   camera_calibration_optimizer.optimize();
-  // camera_calibration_optimizer.printResultsToConsole();
+  camera_calibration_optimizer.printResultsToConsole();
   camera_calibration_optimizer.writeResultsToYAML();
 
   return 0;

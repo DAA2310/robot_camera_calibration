@@ -121,7 +121,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES rviz_simulator
+  LIBRARIES camera_calibration_optimizer_lib simulate_lib
   CATKIN_DEPENDS roscpp std_msgs visualization_msgs interactive_markers roslib 
   # DEPENDS system_lib
 )
