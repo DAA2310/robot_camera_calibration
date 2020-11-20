@@ -122,7 +122,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES camera_calibration_optimizer_lib simulate_lib
-  CATKIN_DEPENDS roscpp std_msgs visualization_msgs interactive_markers roslib 
+  CATKIN_DEPENDS roscpp std_msgs visualization_msgs interactive_markers roslib camera_calibration_parsers
   # DEPENDS system_lib
 )
 

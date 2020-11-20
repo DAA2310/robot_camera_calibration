@@ -65,7 +65,7 @@
   <build_depend>yaml-cpp</build_depend>
   <!-- <build_depend>sensor_msgs</build_depend>
   <build_depend>roscpp_serialization</build_depend> -->
-
+  <build_depend>camera_calibration_parsers</build_depend>
 
   <!-- ceres -->
   <build_depend>atlas</build_depend>
@@ -94,7 +94,7 @@
   <exec_depend>yaml-cpp</exec_depend>
   <!-- <build_depend>sensor_msgs</build_depend>
   <build_depend>roscpp_serialization</build_depend> -->
-
+  <exec_depend>camera_calibration_parsers</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
