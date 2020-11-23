@@ -130,22 +130,19 @@ CameraCalibrationOptimizer::CameraCalibrationOptimizer(std::string detections_di
   this->detections_directory_path_ = detections_directory_path;
   this->camera_intrinsics_ = this->getCameraIntrinsics(this->detections_directory_path_ + "/camera.yaml");
   this->initial_intrinsics_ = this->camera_intrinsics_;
-  this->targets_ = this->getTargets(this->detections_directory_path_ + "/targets.yaml"); ////change load function for Targets
-  this->pictures_ = this->getPictures(this->detections_directory_path_);  ////change load function for cached pictures
+  this->targets_ = this->getTargets(this->detections_directory_path_ + "/targets.yaml"); 
+  this->pictures_ = this->getPictures(this->detections_directory_path_);  
 }
 
-CameraCalibrationOptimizer::CameraCalibrationOptimizer(std::string detections_directory_path, bool flag)
+CameraCalibrationOptimizer::CameraCalibrationOptimizer(std::string path, bool flag)
 {
-  this->detections_directory_path_ = detections_directory_path;
+  this->detections_directory_path_ = path;
   this->camera_intrinsics_ = this->getCameraIntrinsics(this->detections_directory_path_ + "/camera.yaml");
   this->initial_intrinsics_ = this->camera_intrinsics_;
-}
-
-void CameraCalibrationOptimizer::LoadViews()
-{
   this->targets_ = this->getTagMap(known_tags); 
   this->pictures_ = cached_pictures;
 }
+
 
 CameraCalibrationOptimizer::~CameraCalibrationOptimizer()
 {
@@ -287,7 +284,6 @@ std::map<int, Target> CameraCalibrationOptimizer::getTagMap(std::vector<tag> kno
     target.world_T_target = known_tags[i].wTtag_vec;
 
     double tag_size = known_tags[i].size;
-    std::array<std::array<double, OBJ_POINTS_SIZE>, NUM_OBJ_POINTS> obj_pts;
     target.obj_points_in_target[0] = {-(tag_size / 2), -(tag_size / 2), 0};
     target.obj_points_in_target[1] = { (tag_size / 2), -(tag_size / 2), 0};
     target.obj_points_in_target[2] = { (tag_size / 2),  (tag_size / 2), 0};
@@ -296,6 +292,12 @@ std::map<int, Target> CameraCalibrationOptimizer::getTagMap(std::vector<tag> kno
     targets.insert(std::pair<int, Target>(target.targetID, target));
   } 
 
+  return targets;
+}
+
+std::map<int, Target> CameraCalibrationOptimizer::loadTargetMap()
+{
+  std::map<int, Target> targets = this->targets_;
   return targets;
 }
 

@@ -42,7 +42,9 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 
-#include <fstream>
+#include "fstream"
+#include "iostream"
+#include "string"
 
 #include "ceres/ceres.h"
 #include "ceres/rotation.h"
@@ -105,10 +107,15 @@ struct Picture
 
 struct tag
 {
-    int id;
-    double size;
-    Eigen::MatrixXd wTtag;
-    std::array<double, 6> wTtag_vec;
+  int id;
+  int avg_id;
+  bool optimized; // assuming we dont re-optimize
+  double size;
+  Eigen::MatrixXd wTtag;
+  std::array<double, 6> wTtag_vec;
+  Eigen::MatrixXd pose_sum;
+  int pose_count;
+  std::vector<int> pair_count;
 };
 
 std::vector<tag> known_tags;
@@ -148,12 +155,9 @@ public:
   CameraCalibrationOptimizer(std::string detections_directory_path);
 
   /// @param known_tags   Vector of mapped tags, their unique IDs, sizes and world_T_tag poses
-  CameraCalibrationOptimizer(std::string detections_directory_path, bool flag);
+  CameraCalibrationOptimizer(std::string path, bool flag);
 
   ~CameraCalibrationOptimizer();
-
-  //loads or updates targets and pictures data for optimizer
-  void LoadViews();
 
   /// Runs the ceres non linear least squares optimizer on the loaded bundle adjustment problem
   void optimize();
@@ -168,6 +172,9 @@ public:
 
   /// Function outputs the optimization results to YAML files
   void writeResultsToYAML();
+
+  /// returns the private targets_ Targets map
+  std::map<int, Target> loadTargetMap();
 
 private:
   std::string detections_directory_path_;
