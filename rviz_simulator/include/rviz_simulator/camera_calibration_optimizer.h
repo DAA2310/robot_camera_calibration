@@ -108,8 +108,7 @@ struct Picture
 struct tag
 {
   int id;
-  int avg_id;
-  bool optimized; // assuming we dont re-optimize
+  bool averaged; // assuming we dont re-optimize
   double size;
   Eigen::MatrixXd wTtag;
   std::array<double, 6> wTtag_vec;
