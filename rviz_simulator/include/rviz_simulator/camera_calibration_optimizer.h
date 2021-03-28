@@ -105,20 +105,28 @@ struct Picture
   std::vector<Detection> detections;
 };
 
+//substitute structure for real-time VSLAM algorithm
 struct tag
 {
   int id;
-  bool averaged; // assuming we dont re-optimize
   double size;
+  bool averaged; //tag averaging status
+  bool optimized; //tag optimizatio status 
   Eigen::MatrixXd wTtag;
   std::array<double, 6> wTtag_vec;
-  Eigen::MatrixXd pose_sum;
-  int pose_count;
-  std::vector<int> pair_count;
+  Eigen::MatrixXd pose_sum; //sum to be averaged by pose_count
+  int pose_count; //number of frames stored for pose averaging
+  double opt_error; //reprojection error distance in unit pixels 
+  std::vector<int> opt_index; //index for keyframes with tag observed
+  std::vector<int> pair_count; //tag view counts of keyframes stored for optimization
 };
 
 std::vector<tag> known_tags;
-std::vector<Picture> cached_pictures;
+std::vector<Picture> cached_pictures; //original observations stored for reprojection error calculations 
+
+template <typename T>
+void calculatePixelCoords(const T* const camera_intrinsics, const T* const camera_T_world,
+                          const T* const world_T_target, const T* const obj_point_in_target, T* const pixelCoords);
 
 /// Templated functor for the Bundle Adjustment problem
 struct ReProjectionResidual
@@ -174,6 +182,12 @@ public:
 
   /// returns the private targets_ Targets map
   std::map<int, Target> loadTargetMap();
+
+  // returns the private pictures_ vector
+  std::vector<Picture> loadOptPictures();
+
+  //returns the private camera_intrinsics_
+  std::array<double, CAMERA_INTRINSICS_SIZE> loadOptIntrinsics();
 
 private:
   std::string detections_directory_path_;

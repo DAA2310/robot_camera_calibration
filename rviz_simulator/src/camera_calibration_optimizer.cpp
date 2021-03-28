@@ -134,6 +134,7 @@ CameraCalibrationOptimizer::CameraCalibrationOptimizer(std::string detections_di
   this->pictures_ = this->getPictures(this->detections_directory_path_);  
 }
 
+//constructor for optimizer as submodule 
 CameraCalibrationOptimizer::CameraCalibrationOptimizer(std::string path, bool flag)
 {
   this->detections_directory_path_ = path;
@@ -300,6 +301,19 @@ std::map<int, Target> CameraCalibrationOptimizer::loadTargetMap()
   std::map<int, Target> targets = this->targets_;
   return targets;
 }
+
+std::vector<Picture> CameraCalibrationOptimizer::loadOptPictures()
+{
+  std::vector<Picture> pictures = this->pictures_;
+  return pictures;
+}
+
+std::array<double, CAMERA_INTRINSICS_SIZE> CameraCalibrationOptimizer::loadOptIntrinsics()
+{
+  std::array<double, CAMERA_INTRINSICS_SIZE> intrinsics = this->camera_intrinsics_;
+  return intrinsics;
+}
+
 
 /// Helper function, returns a single detection from the YAML file
 Detection getDetection(const YAML::Node& detection_node)
